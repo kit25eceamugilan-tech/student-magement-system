@@ -1,0 +1,259 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+class Bank
+{
+    int accNo;
+    char name[50];
+    float balance;
+
+public:
+
+    void createAccount()
+    {
+        cout << "\nEnter Account Number : ";
+        cin >> accNo;
+
+        cin.ignore();
+
+        cout << "Enter Customer Name : ";
+        cin.getline(name, 50);
+
+        cout << "Enter Balance : ";
+        cin >> balance;
+    }
+
+    void showAccount()
+    {
+        cout << "\nAccount Number : " << accNo;
+        cout << "\nCustomer Name  : " << name;
+        cout << "\nBalance        : " << balance;
+        cout << "\n----------------------------";
+    }
+
+    int returnAccNo()
+    {
+        return accNo;
+    }
+
+    void deposit()
+    {
+        float amt;
+
+        cout << "\nEnter Amount to Deposit : ";
+        cin >> amt;
+
+        balance = balance + amt;
+
+        cout << "\nAmount Deposited Successfully";
+    }
+
+    void withdraw()
+    {
+        float amt;
+
+        cout << "\nEnter Amount to Withdraw : ";
+        cin >> amt;
+
+        if(balance >= amt)
+        {
+            balance = balance - amt;
+            cout << "\nWithdrawal Successful";
+        }
+        else
+        {
+            cout << "\nInsufficient Balance";
+        }
+    }
+};
+
+void addAccount()
+{
+    Bank b;
+
+    ofstream fout("bank.dat", ios::binary | ios::app);
+
+    b.createAccount();
+
+    fout.write((char*)&b, sizeof(b));
+
+    fout.close();
+
+    cout << "\nAccount Created Successfully";
+}
+
+void displayAll()
+{
+    Bank b;
+
+    ifstream fin("bank.dat", ios::binary);
+
+    cout << "\n\n===== ACCOUNT DETAILS =====\n";
+
+    while(fin.read((char*)&b, sizeof(b)))
+    {
+        b.showAccount();
+    }
+
+    fin.close();
+}
+
+void searchAccount()
+{
+    Bank b;
+
+    int no;
+    bool found = false;
+
+    ifstream fin("bank.dat", ios::binary);
+
+    cout << "\nEnter Account Number : ";
+    cin >> no;
+
+    while(fin.read((char*)&b, sizeof(b)))
+    {
+        if(b.returnAccNo() == no)
+        {
+            b.showAccount();
+            found = true;
+            break;
+        }
+    }
+
+    if(found == false)
+    {
+        cout << "\nRecord Not Found";
+    }
+
+    fin.close();
+}
+
+void depositMoney()
+{
+    Bank b;
+
+    int no;
+    bool found = false;
+
+    fstream file("bank.dat", ios::binary | ios::in | ios::out);
+
+    cout << "\nEnter Account Number : ";
+    cin >> no;
+
+    while(file.read((char*)&b, sizeof(b)))
+    {
+        if(b.returnAccNo() == no)
+        {
+            b.deposit();
+
+            int pos = file.tellg();
+
+            file.seekp(pos - sizeof(b));
+
+            file.write((char*)&b, sizeof(b));
+
+            found = true;
+
+            break;
+        }
+    }
+
+    if(found == false)
+    {
+        cout << "\nRecord Not Found";
+    }
+
+    file.close();
+}
+
+void withdrawMoney()
+{
+    Bank b;
+
+    int no;
+    bool found = false;
+
+    fstream file("bank.dat", ios::binary | ios::in | ios::out);
+
+    cout << "\nEnter Account Number : ";
+    cin >> no;
+
+    while(file.read((char*)&b, sizeof(b)))
+    {
+        if(b.returnAccNo() == no)
+        {
+            b.withdraw();
+
+            int pos = file.tellg();
+
+            file.seekp(pos - sizeof(b));
+
+            file.write((char*)&b, sizeof(b));
+
+            found = true;
+
+            break;
+        }
+    }
+
+    if(found == false)
+    {
+        cout << "\nRecord Not Found";
+    }
+
+    file.close();
+}
+
+int main()
+{
+    int choice;
+
+    do
+    {
+        cout << "\n\n===== BANK MANAGEMENT SYSTEM =====";
+        cout << "\n1. Create Account";
+        cout << "\n2. Display All Accounts";
+        cout << "\n3. Search Account";
+        cout << "\n4. Deposit Money";
+        cout << "\n5. Withdraw Money";
+        cout << "\n6. Exit";
+
+        cout << "\n\nEnter Your Choice : ";
+        cin >> choice;
+
+        switch(choice)
+        {
+            case 1:
+                addAccount();
+                break;
+
+            case 2:
+                displayAll();
+                break;
+
+            case 3:
+                searchAccount();
+                break;
+
+            case 4:
+                depositMoney();
+                break;
+
+            case 5:
+                withdrawMoney();
+                break;
+
+            case 6:
+                cout << "\nProgram Ended";
+                break;
+
+            default:
+                cout << "\nInvalid Choice";
+        }
+
+    } while(choice != 6);
+
+    return 0;
+}
