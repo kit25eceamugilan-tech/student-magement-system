@@ -1,0 +1,257 @@
+#include <iostream>
+
+using namespace std;
+
+char board[3][3] =
+{
+    {'1','2','3'},
+    {'4','5','6'},
+    {'7','8','9'}
+};
+
+char currentPlayer = 'X';
+
+void displayBoard()
+{
+    cout << "\n";
+
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            cout << " " << board[i][j] << " ";
+
+            if(j < 2)
+                cout << "|";
+        }
+
+        cout << "\n";
+
+        if(i < 2)
+            cout << "-----------\n";
+    }
+
+    cout << "\n";
+}
+
+bool checkWin()
+{
+    // Rows
+    for(int i = 0; i < 3; i++)
+    {
+        if(board[i][0] == board[i][1] &&
+           board[i][1] == board[i][2])
+        {
+            return true;
+        }
+    }
+
+    // Columns
+    for(int i = 0; i < 3; i++)
+    {
+        if(board[0][i] == board[1][i] &&
+           board[1][i] == board[2][i])
+        {
+            return true;
+        }
+    }
+
+    // Diagonals
+    if(board[0][0] == board[1][1] &&
+       board[1][1] == board[2][2])
+    {
+        return true;
+    }
+
+    if(board[0][2] == board[1][1] &&
+       board[1][1] == board[2][0])
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool checkDraw()
+{
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            if(board[i][j] != 'X' &&
+               board[i][j] != 'O')
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+void playerMove()
+{
+    int choice;
+    bool validMove = false;
+
+    while(!validMove)
+    {
+        cout << "Player " << currentPlayer;
+        cout << ", Enter Position (1-9) : ";
+        cin >> choice;
+
+        switch(choice)
+        {
+            case 1:
+                if(board[0][0] == '1')
+                {
+                    board[0][0] = currentPlayer;
+                    validMove = true;
+                }
+                break;
+
+            case 2:
+                if(board[0][1] == '2')
+                {
+                    board[0][1] = currentPlayer;
+                    validMove = true;
+                }
+                break;
+
+            case 3:
+                if(board[0][2] == '3')
+                {
+                    board[0][2] = currentPlayer;
+                    validMove = true;
+                }
+                break;
+
+            case 4:
+                if(board[1][0] == '4')
+                {
+                    board[1][0] = currentPlayer;
+                    validMove = true;
+                }
+                break;
+
+            case 5:
+                if(board[1][1] == '5')
+                {
+                    board[1][1] = currentPlayer;
+                    validMove = true;
+                }
+                break;
+
+            case 6:
+                if(board[1][2] == '6')
+                {
+                    board[1][2] = currentPlayer;
+                    validMove = true;
+                }
+                break;
+
+            case 7:
+                if(board[2][0] == '7')
+                {
+                    board[2][0] = currentPlayer;
+                    validMove = true;
+                }
+                break;
+
+            case 8:
+                if(board[2][1] == '8')
+                {
+                    board[2][1] = currentPlayer;
+                    validMove = true;
+                }
+                break;
+
+            case 9:
+                if(board[2][2] == '9')
+                {
+                    board[2][2] = currentPlayer;
+                    validMove = true;
+                }
+                break;
+
+            default:
+                cout << "\nInvalid Position\n";
+        }
+
+        if(!validMove)
+        {
+            cout << "\nPosition Already Taken or Invalid\n";
+        }
+    }
+}
+
+void changePlayer()
+{
+    if(currentPlayer == 'X')
+        currentPlayer = 'O';
+    else
+        currentPlayer = 'X';
+}
+
+void resetBoard()
+{
+    char value = '1';
+
+    for(int i = 0; i < 3; i++)
+    {
+        for(int j = 0; j < 3; j++)
+        {
+            board[i][j] = value;
+            value++;
+        }
+    }
+
+    currentPlayer = 'X';
+}
+
+int main()
+{
+    char playAgain;
+
+    do
+    {
+        resetBoard();
+
+        bool gameOver = false;
+
+        while(!gameOver)
+        {
+            displayBoard();
+
+            playerMove();
+
+            displayBoard();
+
+            if(checkWin())
+            {
+                cout << "Player " << currentPlayer;
+                cout << " Wins!\n";
+
+                gameOver = true;
+            }
+            else if(checkDraw())
+            {
+                cout << "Game Draw!\n";
+
+                gameOver = true;
+            }
+            else
+            {
+                changePlayer();
+            }
+        }
+
+        cout << "\nPlay Again? (Y/N) : ";
+        cin >> playAgain;
+
+    } while(playAgain == 'Y' || playAgain == 'y');
+
+    cout << "\nGame Ended\n";
+
+    return 0;
+}
